@@ -147,7 +147,7 @@ public class Program
 
             while (true)
             {
-                Utils.imprimirMesa(mesa, jogadores[j]);
+                Utils.imprimirMesa(mesa, jogadores[j], jogadores);
                 int escolha = int.Parse(Console.ReadLine());
                 switch (escolha)
                 {
