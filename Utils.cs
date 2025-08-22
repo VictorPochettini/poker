@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 
 public class Utils
 {
-    public static void imprimirMesa(Carta[] mesa, Jogador jogador)
+    public static void imprimirMesa(Carta[] mesa, Jogador jogador, List<Jogador> jogadores)
     {
         //Vai imprimir baseado em qual jogador está jogando
         //Ele vai imprimir a rodada do jogador, e então vai imprimir a transição de jogador e encerrar, sem limpar o terminal
