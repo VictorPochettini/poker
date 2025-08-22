@@ -4,6 +4,14 @@ public class Utils
 {
     public static void imprimirMesa(Carta[] mesa, Jogador jogador, List<Jogador> jogadores)
     {
+        Console.WriteLine("Agora é a vez de " + jogador.nome + "\n Passe para ele e então pressione Enter para continuar");
+        _ = Console.ReadLine();
+        Console.Clear();
+        Console.WriteLine("Mesa atual:");
+        foreach (Carta carta in mesa)
+        {
+
+        }
         //Vai imprimir baseado em qual jogador está jogando
         //Ele vai imprimir a rodada do jogador, e então vai imprimir a transição de jogador e encerrar, sem limpar o terminal
     }

@@ -6,6 +6,7 @@ public enum Naipe {
 }
 public class Carta
 {
+    //Preciso reescrever o toString para imprimir a carta, convertendo o naipe no caracter correspondente
     private Naipe naipe { get; set; }
     private int valor { get; set; }
     private Boolean naMesa { get; set; }
