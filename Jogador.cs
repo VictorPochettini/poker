@@ -25,18 +25,26 @@ public class Jogador
     {
         return mão;
     }
+    public void setMão(Carta carta, int indice)
+    {
+        if (indice < 0 || indice >= mão.Length)
+        {
+            throw new ArgumentOutOfRangeException("Índice fora do intervalo da mão do jogador.");
+        }
+        this.mão[indice] = carta;
+    }
 
     public int pagaMesa(int valor)
     {
-            if (fichas >= valor)
-            {
-                fichas -= valor;
-                return valor;
-            }
-            else
-            {
-                return -1; // Indica que o jogador não tem fichas suficientes
-            }
+        if (fichas >= valor)
+        {
+            fichas -= valor;
+            return valor;
+        }
+        else
+        {
+            return -1; // Indica que o jogador não tem fichas suficientes
+        }
     }
 
 }

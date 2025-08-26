@@ -101,7 +101,7 @@ public class Program
                     carta = new Carta(naipe, valor);
                 } while (retirados.Contains(carta));
                 retirados.Add(carta);
-                jogador.getMão()[i] = carta;
+                jogador.setMão(carta, i);
             }
         }
 
@@ -123,41 +123,43 @@ public class Program
 
     static Boolean achaFim(List<Jogador> jogadores)
     {
-        int numInativos = 0;
-        foreach (Jogador jogador in jogadores)
-        {
-            if (jogador.fichas == 0)
-            {
-                numInativos++;
-            }
-        }
-        return numInativos >= jogadores.Count - 1;
+        return jogadores.Count(j => j.estado == Estado.Folded || j.fichas == 0) < jogadores.Count - 1;
     }
 
-    static void rodada(Carta[] mesa, List<Jogador> jogadores, int j, int aposta = 20)
+    static void rodada(Carta[] mesa, List<Jogador> jogadores, int j, int aposta = 20, int aumentado = 0)
     {
+        bool primeira = false;
+        bool loop = true;
+        if (mesa.Count(c => c.getVirada()) == 0 && aumentado == 0)
+            primeira = true;
         Boolean encerrado = false;
-        Utils.ordenar(jogadores, j);
+        Utils.ordenar(ref jogadores, j);
         foreach (Jogador jogador in jogadores)
         {
+            loop = true;
+
             if (jogador.fichas == 0 || jogador.estado == Estado.Folded)
             {
                 continue;
             }
 
-            while (true)
+            while (loop)
             {
-                Utils.imprimirMesa(mesa, jogadores[j], jogadores);
+                Utils.imprimirMesa(mesa, jogadores[j], jogadores, aposta);
+                Console.WriteLine("Escolha sua ação:");
+                Console.WriteLine("1. Apostar");
+                Console.WriteLine("2. Verificar");
+                Console.WriteLine("3. Desistir");
                 int escolha = int.Parse(Console.ReadLine());
                 switch (escolha)
                 {
                     case 1: // Apostar
+                        Console.WriteLine($"\nAposta atual: {aposta}");
                         Console.WriteLine("\nQuanto você quer apostar?");
                         int apostado = int.Parse(Console.ReadLine());
                         if (apostado > jogador.fichas)
                         {
                             Console.WriteLine("\nVocê não tem fichas suficientes para essa aposta.");
-                            Console.Clear();
                             continue;
                         }
                         else
@@ -167,8 +169,10 @@ public class Program
                             if (apostado > aposta)
                             {
                                 Console.Clear();
-                                rodada(mesa, jogadores, (jogadores.IndexOf(jogador) + 1) % jogadores.Count, apostado);
+                                aumentado = apostado - aposta;
+                                rodada(mesa, jogadores, (jogadores.IndexOf(jogador) + 1) % jogadores.Count, apostado, aumentado);
                                 encerrado = true;
+                                loop = false;
                                 break;
                             }
                             else if (apostado < aposta)
@@ -177,9 +181,16 @@ public class Program
                                 Console.Clear();
                                 continue;
                             }
+                            loop = false;
                             break;
                         }
                     case 2: // Verificar
+                        if(aumentado > 0 || (primeira && jogador.estado != Estado.BigBlind && jogador.estado != Estado.SmallBlind))
+                        {
+                            Console.WriteLine("Você precisa aumentar a aposta para continuar.");
+                            Console.Clear();
+                            continue;
+                        }
                         Console.WriteLine($"{jogador.nome} verificou a aposta.");
                         Console.Clear();
                         break;
@@ -233,7 +244,6 @@ public class Program
             montante += Utils.encontraEstado(jogadores, Estado.SmallBlind).pagaMesa(10);
             montante += Utils.encontraEstado(jogadores, Estado.BigBlind).pagaMesa(20);
             int j = (jogadores.IndexOf(Utils.encontraEstado(jogadores, Estado.BigBlind)) + 1) % jogadores.Count;
-            Utils.limparMesa(mesa, jogadores);
             mesa = distribuidor(jogadores);
 
             for (int i = 0; i < 4; i++)
@@ -264,6 +274,7 @@ public class Program
             jogadores[novoSmall].estado = Estado.SmallBlind;
             jogadores[novoBig].estado = Estado.BigBlind;
             j = (j + 1) % jogadores.Count;
+            Utils.limparMesa(mesa, jogadores);
 
         }
     }

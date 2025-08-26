@@ -47,5 +47,21 @@ public class Carta
     {
         return ordem;
     }
+    override public string? ToString()
+    {
+        switch (naipe)
+        {
+            case Naipe.Copas:
+                return valor + "♥";
+            case Naipe.Ouros:
+                return valor + "♦";
+            case Naipe.Paus:
+                return valor + "♣";
+            case Naipe.Espadas:
+                return valor + "♠";
+            default:
+                return null;
+        }
+    }
     
 }

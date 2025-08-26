@@ -2,15 +2,36 @@ using System.Runtime.CompilerServices;
 
 public class Utils
 {
-    public static void imprimirMesa(Carta[] mesa, Jogador jogador, List<Jogador> jogadores)
+    public static void imprimirMesa(Carta[] mesa, Jogador jogador, List<Jogador> jogadores, int aposta)
     {
         Console.WriteLine("Agora é a vez de " + jogador.nome + "\n Passe para ele e então pressione Enter para continuar");
         _ = Console.ReadLine();
         Console.Clear();
+        Console.Write("Aposta atual: ");
+        Console.WriteLine(aposta);
         Console.WriteLine("Mesa atual:");
         foreach (Carta carta in mesa)
         {
+            if (carta.getVirada())
+                Console.Write(carta + " ");
+            else
+                Console.Write("*");
+        }
+        Console.WriteLine("\n");
+        Console.WriteLine("Cartas:");
+        foreach (Carta carta in jogador.getMão())
+        {
+            Console.Write(carta + " ");
+        }
+        Console.WriteLine("\n");
+        Console.WriteLine("Fichas: " + jogador.fichas);
 
+        foreach (Jogador j in jogadores)
+        {
+            if (j != jogador && j.estado != Estado.Folded && j.fichas > 0)
+            {
+                Console.WriteLine(j.nome + " - Fichas: " + j.fichas);
+            }
         }
         //Vai imprimir baseado em qual jogador está jogando
         //Ele vai imprimir a rodada do jogador, e então vai imprimir a transição de jogador e encerrar, sem limpar o terminal
@@ -47,7 +68,7 @@ public class Utils
         return jogadores[index + 1];
     }
 
-    public static void ordenar(List<Jogador> jogadores, int i)
+    public static void ordenar(ref List<Jogador> jogadores, int i)
     {
         List<Jogador> aux = new List<Jogador>();
         int n = jogadores.Count;
@@ -57,6 +78,7 @@ public class Utils
             int indice = (i + j) % n; // isso garante rotação circular
             aux.Add(jogadores[indice]);
         }
+        jogadores = aux;
     }
 
 }
