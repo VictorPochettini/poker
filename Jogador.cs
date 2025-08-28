@@ -1,50 +1,65 @@
-
-public enum Estado
-{
-    Padrão,
-    Dealer,
-    SmallBlind,
-    BigBlind,
-    Folded
-}
 public class Jogador
 {
-    public string nome { get; set; }
-    public int fichas { get; set; }
-    private Carta[] mão = new Carta[2];
-    public Estado estado { get; set; }
+    public string Nome { get; set; }
+    public int Fichas { get; set; }
+    private Carta[] mao = new Carta[2];
+    public Estado Estado { get; set; }
+    public int ApostaAtual { get; set; }
 
-    public Jogador(string nome, int fichas, Estado estado)
+    public Jogador(string nome, int fichas)
     {
-        this.nome = nome;
-        this.fichas = fichas;
-        this.estado = Estado.Padrão;
+        this.Nome = nome;
+        this.Fichas = fichas;
+        this.Estado = Estado.Padrao;
+        this.ApostaAtual = 0;
     }
 
-    public Carta[] getMão()
+    public Carta[] GetMao()
     {
-        return mão;
+        return mao;
     }
-    public void setMão(Carta carta, int indice)
+
+    public void SetMao(Carta carta, int indice)
     {
-        if (indice < 0 || indice >= mão.Length)
+        if (indice < 0 || indice >= mao.Length)
         {
             throw new ArgumentOutOfRangeException("Índice fora do intervalo da mão do jogador.");
         }
-        this.mão[indice] = carta;
+        this.mao[indice] = carta;
     }
 
-    public int pagaMesa(int valor)
+    public int PagaMesa(int valor)
     {
-        if (fichas >= valor)
+        if (Fichas >= valor)
         {
-            fichas -= valor;
+            Fichas -= valor;
+            ApostaAtual += valor;
+            if (Fichas == 0)
+            {
+                Estado = Estado.AllIn;
+            }
             return valor;
         }
-        else
+        else if (Fichas > 0)
         {
-            return -1; // Indica que o jogador não tem fichas suficientes
+            // All-in
+            int todasFichas = Fichas;
+            Fichas = 0;
+            ApostaAtual += todasFichas;
+            Estado = Estado.AllIn;
+            return todasFichas;
         }
+        return 0;
     }
 
+    public void LimparMao()
+    {
+        mao[0] = null;
+        mao[1] = null;
+        ApostaAtual = 0;
+        if (Estado != Estado.Dealer && Estado != Estado.SmallBlind && Estado != Estado.BigBlind)
+        {
+            Estado = Estado.Padrao;
+        }
+    }
 }

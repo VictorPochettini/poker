@@ -1,67 +1,87 @@
-public enum Naipe {
+public enum Naipe
+{
     Copas,
     Ouros,
     Paus,
     Espadas
 }
+
+public enum Estado
+{
+    Padrao,
+    Dealer,
+    SmallBlind,
+    BigBlind,
+    Folded,
+    AllIn
+}
+
+public enum Mao
+{
+    RoyalFlush = 10,
+    StraightFlush = 9,
+    FourOfAKind = 8,
+    FullHouse = 7,
+    Flush = 6,
+    Straight = 5,
+    ThreeOfAKind = 4,
+    TwoPair = 3,
+    OnePair = 2,
+    HighCard = 1
+}
+
 public class Carta
 {
-    //Preciso reescrever o toString para imprimir a carta, convertendo o naipe no caracter correspondente
-    private Naipe naipe { get; set; }
-    private int valor { get; set; }
-    private Boolean naMesa { get; set; }
-    private Boolean virada { get; set; }
-    private int ordem { get; set; }
-    public Carta(Naipe naipe, int valor)
+    public Naipe Naipe { get; private set; }
+    public int Valor { get; private set; }
+    public bool NaMesa { get; private set; }
+    public bool Virada { get; private set; }
+
+    public Carta(Naipe naipe, int valor, bool naMesa = false)
     {
-        this.naipe = naipe;
-        this.valor = valor;
+        this.Naipe = naipe;
+        this.Valor = valor;
+        this.NaMesa = naMesa;
+        this.Virada = false;
     }
-    public Carta(Naipe naipe, int valor, Boolean naMesa)
+
+    public void MudaVirada(bool virada)
     {
-        this.naipe = naipe;
-        this.valor = valor;
-        this.naMesa = naMesa;
+        this.Virada = virada;
     }
-    public void mudaVirada(Boolean virada)
+
+    public override string ToString()
     {
-        this.virada = virada;
-    }
-    public int getValor()
-    {
-        return valor;
-    }
-    public Naipe getNaipe()
-    {
-        return naipe;
-    }
-    public Boolean getNaMesa()
-    {
-        return naMesa;
-    }
-    public Boolean getVirada()
-    {
-        return virada;
-    }
-    public int getOrdem()
-    {
-        return ordem;
-    }
-    override public string? ToString()
-    {
-        switch (naipe)
+        string valorStr = Valor switch
         {
-            case Naipe.Copas:
-                return valor + "♥";
-            case Naipe.Ouros:
-                return valor + "♦";
-            case Naipe.Paus:
-                return valor + "♣";
-            case Naipe.Espadas:
-                return valor + "♠";
-            default:
-                return null;
-        }
+            1 => "A",
+            11 => "J",
+            12 => "Q",
+            13 => "K",
+            _ => Valor.ToString()
+        };
+
+        return Naipe switch
+        {
+            Naipe.Copas => valorStr + "♥",
+            Naipe.Ouros => valorStr + "♦",
+            Naipe.Paus => valorStr + "♣",
+            Naipe.Espadas => valorStr + "♠",
+            _ => "??"
+        };
     }
-    
+
+    public override bool Equals(object obj)
+    {
+        if (obj is Carta carta)
+        {
+            return this.Naipe == carta.Naipe && this.Valor == carta.Valor;
+        }
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Naipe, Valor);
+    }
 }

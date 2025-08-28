@@ -1,84 +1,63 @@
-using System.Runtime.CompilerServices;
-
 public class Utils
 {
-    public static void imprimirMesa(Carta[] mesa, Jogador jogador, List<Jogador> jogadores, int aposta)
+    public static void ImprimirTransicao(string proximoJogador)
     {
-        Console.WriteLine("Agora é a vez de " + jogador.nome + "\n Passe para ele e então pressione Enter para continuar");
-        _ = Console.ReadLine();
         Console.Clear();
-        Console.Write("Aposta atual: ");
-        Console.WriteLine(aposta);
-        Console.WriteLine("Mesa atual:");
+        Console.WriteLine("\n" + new string('=', 50));
+        Console.WriteLine($"      PASSANDO PARA: {proximoJogador.ToUpper()}");
+        Console.WriteLine(new string('=', 50));
+        Console.WriteLine("\n🔄 Passe o computador para o próximo jogador");
+        Console.WriteLine("📱 Pressione ENTER quando estiver pronto...");
+        Console.ReadLine();
+        Console.Clear();
+    }
+
+    public static void ImprimirMesa(Carta[] mesa, Jogador jogadorAtual, List<Jogador> jogadores, int pot, int apostaAtual)
+    {
+        Console.WriteLine($"\n=== VEZ DE {jogadorAtual.Nome.ToUpper()} ===");
+        Console.WriteLine($"Pot: ${pot}");
+        Console.WriteLine($"Aposta atual para igualar: ${apostaAtual - jogadorAtual.ApostaAtual}");
+        
+        Console.WriteLine("\nMesa:");
         foreach (Carta carta in mesa)
         {
-            if (carta.getVirada())
+            if (carta != null && carta.Virada)
                 Console.Write(carta + " ");
-            else
-                Console.Write("*");
+            else if (carta != null)
+                Console.Write("** ");
         }
-        Console.WriteLine("\n");
-        Console.WriteLine("Cartas:");
-        foreach (Carta carta in jogador.getMão())
-        {
-            Console.Write(carta + " ");
-        }
-        Console.WriteLine("\n");
-        Console.WriteLine("Fichas: " + jogador.fichas);
-
+        
+        Console.WriteLine($"\n\nSuas cartas: {jogadorAtual.GetMao()[0]} {jogadorAtual.GetMao()[1]}");
+        Console.WriteLine($"Suas fichas: ${jogadorAtual.Fichas}");
+        Console.WriteLine($"Sua aposta atual: ${jogadorAtual.ApostaAtual}");
+        
+        Console.WriteLine("\nOutros jogadores:");
         foreach (Jogador j in jogadores)
         {
-            if (j != jogador && j.estado != Estado.Folded && j.fichas > 0)
+            if (j != jogadorAtual)
             {
-                Console.WriteLine(j.nome + " - Fichas: " + j.fichas);
+                string status = j.Estado == Estado.Folded ? " (FOLD)" : 
+                               j.Estado == Estado.AllIn ? " (ALL-IN)" : "";
+                Console.WriteLine($"{j.Nome}: ${j.Fichas} fichas (apostou ${j.ApostaAtual}){status}");
             }
         }
-        //Vai imprimir baseado em qual jogador está jogando
-        //Ele vai imprimir a rodada do jogador, e então vai imprimir a transição de jogador e encerrar, sem limpar o terminal
     }
 
-    public static void limparMesa(Carta[] mesa, List<Jogador> jogadores)
+    public static Jogador EncontraEstado(List<Jogador> jogadores, Estado estado)
     {
-        for (int i = 0; i < mesa.Length; i++)
-        {
-            mesa[i] = null; // Remove a referência às cartas na mesa
-        }
+        return jogadores.FirstOrDefault(j => j.Estado == estado);
     }
 
-    public static Jogador encontraEstado(List<Jogador> jogadores, Estado estado)
+    public static List<Jogador> OrdenarJogadores(List<Jogador> jogadores, int indiceInicial)
     {
-        foreach (Jogador jogador in jogadores)
+        List<Jogador> ordenados = new List<Jogador>();
+        int count = jogadores.Count;
+        
+        for (int i = 0; i < count; i++)
         {
-            if (jogador.estado == estado)
-            {
-                return jogador;
-            }
+            ordenados.Add(jogadores[(indiceInicial + i) % count]);
         }
-
-        return null;
+        
+        return ordenados;
     }
-
-    public static Jogador proximo(List<Jogador> jogadores, Jogador atual, int numJogadores)
-    {
-        int index = jogadores.IndexOf(atual);
-        if (index == numJogadores - 1)
-        {
-            return jogadores[0];
-        }
-        return jogadores[index + 1];
-    }
-
-    public static void ordenar(ref List<Jogador> jogadores, int i)
-    {
-        List<Jogador> aux = new List<Jogador>();
-        int n = jogadores.Count;
-        aux.Add(jogadores[i]);
-        for (int j = 0; j < n; j++)
-        {
-            int indice = (i + j) % n; // isso garante rotação circular
-            aux.Add(jogadores[indice]);
-        }
-        jogadores = aux;
-    }
-
 }
